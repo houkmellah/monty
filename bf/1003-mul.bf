@@ -1,6 +1,6 @@
-Read two integers from stdin
+read from stdin
 >, >, <<
-Convert input to integers using atoi
+convert atoi
 +++++ +
 [
  >----- ---
@@ -21,13 +21,13 @@ separate two digits inputed
 ]
 <-
 <+++++ +++++>>>[-<<<->>>]<<<
-convert result to itoa
+convert itoa
 <+++++ +
 [
  >+++++ +++>
  [+++++ +++>]
  <[<]>-
 ]
-print result with newline
+print with newline
 >>[.<<]<[<<]>>.
 >>,. 
