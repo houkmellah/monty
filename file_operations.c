@@ -1,115 +1,112 @@
 #include "monty.h"
 
 /**
- * openFile - Opens a file for reading
- * @fileName: Path or name of the file to be opened
+ * open_file - Opens a file for reading
+ * @file_name: Path or name of the file to be opened
  */
-void openFile(char *fileName)
+void open_file(char *file_name)
 {
-	FILE *filePointer = fopen(fileName, "r");
+  FILE *fd = fopen(file_name, "r");
 
-	if (fileName == NULL || filePointer == NULL)
-	handleError(2, fileName);
+  if (file_name == NULL || fd == NULL)
+    err(2, file_name);
 
-	readFile(filePointer);
-	fclose(filePointer);
+  read_file(fd);
+  fclose(fd);
 }
 
 /**
- * readFile - Reads each line from a given file
- * @filePointer: File descriptor of the file to be read
+ * read_file - Reads each line from a given file
+ * @fd: File descriptor of the file to be read
  */
-void readFile(FILE *filePointer)
+void read_file(FILE *fd)
 {
-	int lineNumber, storageFormat = 0;
-	char *buffer = NULL;
-	size_t length = 0;
+  int line_number, format = 0;
+  char *buffer = NULL;
+  size_t len = 0;
 
-	for (lineNumber = 1; getline(&buffer, &length, filePointer) != -1;
-	lineNumber++)
-	{
-	storageFormat = parseLine(buffer, lineNumber, storageFormat);
-	}
-	free(buffer);
+  for (line_number = 1; getline(&buffer, &len, fd) != -1; line_number++)
+    {
+      format = parse_line(buffer, line_number, format);
+    }
+  free(buffer);
 }
 
 /**
- * parseLine - Parses a line from a file to determine the operation
+ * parse_line - Parses a line from a file to determine the operation
  * @buffer: Line extracted from the file
- * @lineNumber: The current line number in the file
- * @storageFormat: Format of storage (0 for stack, 1 for queue)
+ * @line_number: The current line number in the file
+ * @format: Format of storage (0 for stack, 1 for queue)
  * Return: 0 for stack, 1 for queue depending on the operation
  */
-int parseLine(char *buffer, int lineNumber, int storageFormat)
+int parse_line(char *buffer, int line_number, int format)
 {
-	char *opcode, *value;
-	const char *delimiter = "\n ";
+  char *opcode, *value;
+  const char *delim = "\n ";
 
-	if (buffer == NULL)
-	handleError(4);
+  if (buffer == NULL)
+    err(4);
 
-	opcode = strtok(buffer, delimiter);
-	if (opcode == NULL)
-	return (storageFormat);
-	value = strtok(NULL, delimiter);
+  opcode = strtok(buffer, delim);
+  if (opcode == NULL)
+    return format;
+  value = strtok(NULL, delim);
 
-	if (strcmp(opcode, "stack") == 0)
-	return (0);
-	if (strcmp(opcode, "queue") == 0)
-	return (1);
+  if (strcmp(opcode, "stack") == 0)
+    return 0;
+  if (strcmp(opcode, "queue") == 0)
+    return 1;
 
-	locateFunction(opcode, value, lineNumber, storageFormat);
-	return (storageFormat);
+  find_func(opcode, value, line_number, format);
+  return format;
 }
 
 /**
- * locateFunction - Locates and calls the function associated with an opcode
+ * find_func - Locates and calls the function associated with an opcode
  * @opcode: Operation code to be executed
  * @value: Argument for the operation code
- * @lineNumber: Line number in the script
- * @storageFormat: Format of storage (0 for stack, 1 for queue)
+ * @line_number: Line number in the script
+ * @format: Format of storage (0 for stack, 1 for queue)
  */
-void locateFunction(char *opcode, char *value, int lineNumber,
-int storageFormat)
+void find_func(char *opcode, char *value, int line_number, int format)
 {
-	int i;
-	int flag;
+  int i;
+  int flag;
 
-	instruction_t func_list[] = {
-				{"push", pushToStack},
-				{"pall", displayStack},
-				{"pint", displayTop},
-				{"pop", popStack},
-				{"nop", noOperation},
-				{"swap", swapTopTwo},
-				{"add", addTopTwo},
-				{"sub", subtractTopTwo},
-				{"div", divideTopTwo},
-				{"mul", multiplyTopTwo},
-				{"mod", modulusTopTwo},
-				{"pchar", printCharTop},
-				{"pstr", printString},
-				{"rotl", rotateLeft},
-				{"rotr", rotateRight},
-				{NULL, NULL}
-	};
+  instruction_t func_list[] = {
+			       {"push", add_to_stack},
+			       {"pall", print_stack},
+			       {"pint", print_top},
+			       {"pop", pop_top},
+			       {"nop", nop},
+			       {"swap", swap_nodes},
+			       {"add", add_nodes},
+			       {"sub", sub_nodes},
+			       {"div", div_nodes},
+			       {"mul", mul_nodes},
+			       {"mod", mod_nodes},
+			       {"pchar", print_char},
+			       {"pstr", print_str},
+			       {"rotl", rotl},
+			       {"rotr", rotr},
+			       {NULL, NULL}
+  };
 
-	if (opcode[0] == '#')
-	return;
+  if (opcode[0] == '#')
+    return;
 
-	for (flag = 1, i = 0; func_list[i].opcode != NULL; i++)
+  for (flag = 1, i = 0; func_list[i].opcode != NULL; i++)
+    {
+      if (strcmp(opcode, func_list[i].opcode) == 0)
 	{
-	if (strcmp(opcode, func_list[i].opcode) == 0)
-	{
-		executeFunction(func_list[i].execute, opcode, value, lineNumber,
-		storageFormat);
-		flag = 0;
-		break;
+	  call_fun(func_list[i].f, opcode, value, line_number, format);
+	  flag = 0;
+	  break;
 	}
-	}
+    }
 
-	if (flag == 1)
-	handleError(3, lineNumber, opcode);
+  if (flag == 1)
+    err(3, line_number, opcode);
 }
 
 /**
@@ -117,32 +114,33 @@ int storageFormat)
  * @func: Function to be executed
  * @opcode: Operation code
  * @value: Value associated with the operation
- * @lineNumber: Line number in the script
- * @storageFormat: Format of storage (0 for stack, 1 for queue)
+ * @line_number: Line number in the script
+ * @format: Format of storage (0 for stack, 1 for queue)
  */
-void executeFunction(opcode_function func, char *opcode, char *value,
-int lineNumber, int storageFormat)
+void executeFunction(op_func func, char *opcode, char *value, int line_number, int format)
 {
-	stack_node_t *node;
-	int num, isNegative = 0;
+  stack_t *node;
+  int num, isNegative = 0;
 
-	if (strcmp(opcode, "push") == 0)
-	{
-	if (value == NULL)
-	handleError(5, lineNumber);
+  if (strcmp(opcode, "push") == 0)
+    {
+      if (value == NULL)
+	err(5, line_number);
 
-	num = atoi(value);
-	if (num == 0 && value[0] != '0')
-	handleError(5, lineNumber);
+      num = atoi(value);
+      if (num == 0 && value[0] != '0') 
+	err(5, line_number);
 
-	node = createNode(num);
-	if (storageFormat == 0)
-	func(&node, lineNumber);
-	else if (storageFormat == 1)
-	enqueue(&node, lineNumber);
-	}
-	else
-	{
-	func(&stack_head, lineNumber);
-	}
+      node = create_node(atoi(value) * isNegative);
+      if (format == 0)
+	func(&node, line_number);
+      else if (format == 1)
+	add_to_queue(&node, line_number);
+    }
+  else
+    {
+      func(&head, line_number);
+    }
 }
+
+

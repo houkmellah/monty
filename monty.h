@@ -10,35 +10,37 @@
 #include <stdarg.h>
 
 /**
- * struct stack_node - doubly linked list representation of a stack or queue
- * @value: integer value of the node
- * @previous: points to the previous node in the stack or queue
- * @next: points to the next node in the stack or queue
+ * struct stack_s - doubly linked list representation of a stack (or queue)
+ * @n: integer
+ * @prev: points to the previous element of the stack (or queue)
+ * @next: points to the next element of the stack (or queue)
  *
- * Description: node structure for stack or queue operations (LIFO, FIFO)
+ * Description: doubly linked list node structure
+ * for stack, queues, LIFO, FIFO
  */
-typedef struct stack_node
+typedef struct stack_s
 {
-        int value;
-        struct stack_node *previous;
-        struct stack_node *next;
-} stack_node_t;
+  int n;
+  struct stack_s *prev;
+  struct stack_s *next;
+} stack_t;
 
 /**
- * struct instruction - opcode and its associated function
- * @opcode: the operation code
- * @execute: function to execute the opcode
+ * struct instruction_s - opcode and its function
+ * @opcode: the opcode
+ * @f: function to handle the opcode
  *
- * Description: Mapping of opcodes to their functions for stack or queue operations
+ * Description: opcode and its function
+ * for stack, queues, LIFO, FIFO
  */
-typedef struct instruction
+typedef struct instruction_s
 {
-        char *opcode;
-        void (*execute)(stack_node_t **stack, unsigned int lineNumber);
+  char *opcode;
+  void (*f)(stack_t **stack, unsigned int line_number);
 } instruction_t;
 
-extern stack_node_t *stack_head;
-typedef void (*opcode_function)(stack_node_t **, unsigned int);
+extern stack_t *head;
+typedef void (*op_func)(stack_t **, unsigned int);
 
 /* File operations */
 void openFile(char *fileName);
@@ -80,4 +82,3 @@ void stringErrorHandling(int errorCode, ...);
 void rotateRight(stack_node_t **stack, unsigned int lineNumber);
 
 #endif /* MONTY_H */
-
