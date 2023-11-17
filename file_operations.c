@@ -1,146 +1,141 @@
 #include "monty.h"
 
 /**
- * open_file - Opens a file for reading
- * @file_name: Path or name of the file to be opened
+ * openDocument - Opens a specified file.
+ * @fileName: The file name/path.
+ * Return: void.
  */
-void open_file(char *file_name)
+void openDocument(char *fileName)
 {
-  FILE *fd = fopen(file_name, "r");
+	FILE *fileDescriptor = fopen(fileName, "r");
 
-  if (file_name == NULL || fd == NULL)
-    err(2, file_name);
+	if (fileName == NULL || fileDescriptor == NULL)
+	handleErr(2, fileName);
 
-  read_file(fd);
-  fclose(fd);
+	scanFile(fileDescriptor);
+	fclose(fileDescriptor);
 }
 
 /**
- * read_file - Reads each line from a given file
- * @fd: File descriptor of the file to be read
+ * scanFile - Reads a file and processes its contents.
+ * @fileDescriptor: Pointer to the file descriptor.
+ * Return: void.
  */
-void read_file(FILE *fd)
+void scanFile(FILE *fileDescriptor)
 {
-  int line_number, format = 0;
-  char *buffer = NULL;
-  size_t len = 0;
+	int lineNum, format = 0;
+	char *buffer = NULL;
+	size_t len = 0;
 
-  for (line_number = 1; getline(&buffer, &len, fd) != -1; line_number++)
-    {
-      format = parse_line(buffer, line_number, format);
-    }
-  free(buffer);
-}
-
-/**
- * parse_line - Parses a line from a file to determine the operation
- * @buffer: Line extracted from the file
- * @line_number: The current line number in the file
- * @format: Format of storage (0 for stack, 1 for queue)
- * Return: 0 for stack, 1 for queue depending on the operation
- */
-int parse_line(char *buffer, int line_number, int format)
-{
-  char *opcode, *value;
-  const char *delim = "\n ";
-
-  if (buffer == NULL)
-    err(4);
-
-  opcode = strtok(buffer, delim);
-  if (opcode == NULL)
-    return format;
-  value = strtok(NULL, delim);
-
-  if (strcmp(opcode, "stack") == 0)
-    return 0;
-  if (strcmp(opcode, "queue") == 0)
-    return 1;
-
-  find_func(opcode, value, line_number, format);
-  return format;
-}
-
-/**
- * find_func - Locates and calls the function associated with an opcode
- * @opcode: Operation code to be executed
- * @value: Argument for the operation code
- * @line_number: Line number in the script
- * @format: Format of storage (0 for stack, 1 for queue)
- */
-void find_func(char *opcode, char *value, int line_number, int format)
-{
-  int i;
-  int flag;
-
-  instruction_t func_list[] = {
-			       {"push", add_to_stack},
-			       {"pall", print_stack},
-			       {"pint", print_top},
-			       {"pop", pop_top},
-			       {"nop", nop},
-			       {"swap", swap_nodes},
-			       {"add", add_nodes},
-			       {"sub", sub_nodes},
-			       {"div", div_nodes},
-			       {"mul", mul_nodes},
-			       {"mod", mod_nodes},
-			       {"pchar", print_char},
-			       {"pstr", print_str},
-			       {"rotl", rotl},
-			       {"rotr", rotr},
-			       {NULL, NULL}
-  };
-
-  if (opcode[0] == '#')
-    return;
-
-  for (flag = 1, i = 0; func_list[i].opcode != NULL; i++)
-    {
-      if (strcmp(opcode, func_list[i].opcode) == 0)
+	for (lineNum = 1; getline(&buffer, &len, fileDescriptor) != -1; lineNum++)
 	{
-	  call_fun(func_list[i].f, opcode, value, line_number, format);
-	  flag = 0;
-	  break;
+	format = processLine(buffer, lineNum, format);
 	}
-    }
-
-  if (flag == 1)
-    err(3, line_number, opcode);
+	free(buffer);
 }
 
 /**
- * executeFunction - Executes a specific function based on the opcode
- * @func: Function to be executed
- * @opcode: Operation code
- * @value: Value associated with the operation
- * @line_number: Line number in the script
- * @format: Format of storage (0 for stack, 1 for queue)
+ * processLine - Processes each line to determine the function call.
+ * @buffer: Line from the file.
+ * @lineNum: Line number.
+ * @format: Storage format (0 for stack, 1 for queue).
+ * Return: Returns 0 if opcode is stack, 1 if queue.
  */
-void executeFunction(op_func func, char *opcode, char *value, int line_number, int format)
+int processLine(char *buffer, int lineNum, int format)
 {
-  stack_t *node;
-  int num, isNegative = 0;
+	char *opcode, *value;
+	const char *delim = "\n ";
 
-  if (strcmp(opcode, "push") == 0)
-    {
-      if (value == NULL)
-	err(5, line_number);
+	if (buffer == NULL)
+	handleErr(4);
 
-      num = atoi(value);
-      if (num == 0 && value[0] != '0') 
-	err(5, line_number);
+	opcode = strtok(buffer, delim);
+	if (opcode == NULL)
+	return (format);
+	value = strtok(NULL, delim);
 
-      node = create_node(atoi(value) * isNegative);
-      if (format == 0)
-	func(&node, line_number);
-      else if (format == 1)
-	add_to_queue(&node, line_number);
-    }
-  else
-    {
-      func(&head, line_number);
-    }
+	if (strcmp(opcode, "stack") == 0)
+	return (0);
+	if (strcmp(opcode, "queue") == 0)
+	return (1);
+
+	locateFunction(opcode, value, lineNum, format);
+	return (format);
+}
+
+/**
+ * locateFunction - Finds and executes the appropriate function.
+ * @opcode: Opcode.
+ * @value: Opcode argument.
+ * @ln: Line number.
+ * @format: Storage format (0 for stack, 1 for queue).
+ * Return: void.
+ */
+void locateFunction(char *opcode, char *value, int ln, int format)
+{
+	int i, flag;
+	instruction_t funcList[] = {
+				{"push", pushToStack}, {"pall", displayStack},
+				{"pint", showTop}, {"pop", removeTop},
+				{"nop", nop}, {"swap", switchNodes},
+				{"add", sumNodes}, {"sub", subtractNodes},
+				{"div", divideNodes}, {"mul", multiplyNodes},
+				{"mod", moduloNodes}, {"pchar", printChar},
+				{"pstr", printString}, {"rotl", rotateLeft},
+				{"rotr", rotateRight}, {NULL, NULL}
+	};
+
+	if (opcode[0] == '#')
+	return;
+
+	for (flag = 1, i = 0; funcList[i].opcode != NULL; i++)
+	{
+	if (strcmp(opcode, funcList[i].opcode) == 0)
+	{
+		executeFunction(funcList[i].f, opcode, value, ln, format);
+		flag = 0;
+	}
+	}
+	if (flag == 1)
+	handleErr(3, ln, opcode);
+}
+
+/**
+ * executeFunction - Executes the required function.
+ * @func: Pointer to the function to be called.
+ * @op: Opcode string.
+ * @val: Numeric value string.
+ * @ln: Line number.
+ * @format: Format specifier (0 for stack, 1 for queue).
+ */
+void executeFunction(op_func func, char *op, char *val, int ln, int format)
+{
+	stack_t *node;
+	int flag, i;
+
+	flag = 1;
+	if (strcmp(op, "push") == 0)
+	{
+	if (val != NULL && val[0] == '-')
+	{
+		val += 1;
+		flag = -1;
+	}
+	if (val == NULL)
+	handleErr(5, ln);
+	for (i = 0; val[i] != '\0'; i++)
+	{
+		if (!isdigit(val[i]))
+		handleErr(5, ln);
+	}
+	node = initNode(atoi(val) * flag);
+	if (format == 0)
+	func(&node, ln);
+	else if (format == 1)
+	enqueueToStack(&node, ln);
+	}
+	else
+	func(&head, ln);
 }
 
 

@@ -1,111 +1,116 @@
 #include "monty.h"
 
 /**
- * handleError - Displays appropriate error messages based on error codes.
- * @errorCode: The error codes are as follows:
- * (1) => No file or more than one file provided to the program.
- * (2) => Provided file cannot be opened or read.
- * (3) => Invalid instruction in the file.
- * (4) => Unable to allocate more memory (malloc failed).
- * (5) => Non-integer parameter passed to "push" instruction.
- * (6) => Stack empty when attempting "pint".
- * (7) => Stack empty when attempting "pop".
- * (8) => Stack too short for operation.
+ * err - Prints appropiate error messages determined by their error code.
+ * @error_code: The error codes are the following:
+ * (1) => The user does not give any file or more than one file to the program.
+ * (2) => The file provided is not a file that can be opened or read.
+ * (3) => The file provided contains an invalid instruction.
+ * (4) => When the program is unable to malloc more memory.
+ * (5) => When the parameter passed to the instruction "push" is not an int.
+ * (6) => When the stack it empty for pint.
+ * (7) => When the stack it empty for pop.
+ * (8) => When stack is too short for operation.
  */
-void handleError(int errorCode, ...)
+void err(int error_code, ...)
 {
-	va_list args;
-	char *operation;
-	int lineNum;
-va_start(args, errorCode);
-switch (errorCode)
+	va_list ag;
+	char *op;
+	int l_num;
+
+	va_start(ag, error_code);
+	switch (error_code)
 	{
 	case 1:
 	fprintf(stderr, "USAGE: monty file\n");
 	break;
 	case 2:
-	fprintf(stderr, "Error: Can't open file %s\n", va_arg(args, char *));
+	fprintf(stderr, "Error: Can't open file %s\n",
+		va_arg(ag, char *));
 	break;
 	case 3:
-	lineNum = va_arg(args, int);
-	operation = va_arg(args, char *);
-	fprintf(stderr, "L%d: unknown instruction %s\n", lineNum, operation);
+	l_num = va_arg(ag, int);
+	op = va_arg(ag, char *);
+	fprintf(stderr, "L%d: unknown instruction %s\n", l_num, op);
 	break;
 	case 4:
 	fprintf(stderr, "Error: malloc failed\n");
 	break;
 	case 5:
-	fprintf(stderr, "L%d: usage: push integer\n", va_arg(args, int));
+	fprintf(stderr, "L%d: usage: push integer\n", va_arg(ag, int));
 	break;
 	default:
 	break;
 	}
-	freeNodes();
+	releaseNodes();
 	exit(EXIT_FAILURE);
 }
 
 /**
- * additionalErrorHandling - Manages additional error scenarios.
- * @errorCode: Error codes:
- * (6) => Stack empty for "pint".
- * (7) => Stack empty for "pop".
- * (8) => Stack too short for an operation.
- * (9) => Division by zero during an operation.
+ * more_err - handles errors.
+ * @error_code: The error codes are the following:
+ * (6) => When the stack it empty for pint.
+ * (7) => When the stack it empty for pop.
+ * (8) => When stack is too short for operation.
+ * (9) => Division by zero.
  */
-void additionalErrorHandling(int errorCode, ...)
+void more_err(int error_code, ...)
 {
-	va_list args;
-	char *operation;
-	int lineNum;
+	va_list ag;
+	char *op;
+	int l_num;
 
-	va_start(args, errorCode);
-	switch (errorCode)
+	va_start(ag, error_code);
+	switch (error_code)
 	{
 	case 6:
-	fprintf(stderr, "L%d: can't pint, stack empty\n", va_arg(args, int));
+	fprintf(stderr, "L%d: can't pint, stack empty\n",
+		va_arg(ag, int));
 	break;
 	case 7:
-	fprintf(stderr, "L%d: can't pop an empty stack\n", va_arg(args, int));
+	fprintf(stderr, "L%d: can't pop an empty stack\n",
+		va_arg(ag, int));
 	break;
 	case 8:
-	lineNum = va_arg(args, unsigned int);
-	operation = va_arg(args, char *);
-	fprintf(stderr, "L%d: can't %s, stack too short\n", lineNum, operation);
+	l_num = va_arg(ag, unsigned int);
+	op = va_arg(ag, char *);
+	fprintf(stderr, "L%d: can't %s, stack too short\n", l_num, op);
 	break;
 	case 9:
-	fprintf(stderr, "L%d: division by zero\n", va_arg(args, unsigned int));
+	fprintf(stderr, "L%d: division by zero\n",
+		va_arg(ag, unsigned int));
 	break;
 	default:
 	break;
 	}
-	freeNodes();
+	releaseNodes();
 	exit(EXIT_FAILURE);
 }
 
 /**
- * stringErrorHandling - Manages errors related to string operations.
- * @errorCode: Error codes:
- * (10) => Node number outside ASCII range.
- * (11) => Stack empty when attempting "pchar".
+ * string_err - handles errors.
+ * @error_code: The error codes are the following:
+ * (10) ~> The number inside a node is outside ASCII bounds.
+ * (11) ~> The stack is empty.
  */
-void stringErrorHandling(int errorCode, ...)
+void string_err(int error_code, ...)
 {
-	va_list args;
-	int lineNum;
+	va_list ag;
+	int l_num;
 
-	va_start(args, errorCode);
-	lineNum = va_arg(args, int);
-	switch (errorCode)
+	va_start(ag, error_code);
+	l_num = va_arg(ag, int);
+	switch (error_code)
 	{
 	case 10:
-	fprintf(stderr, "L%d: can't pchar, value out of range\n", lineNum);
+	fprintf(stderr, "L%d: can't pchar, value out of range\n", l_num);
 	break;
 	case 11:
-	fprintf(stderr, "L%d: can't pchar, stack empty\n", lineNum);
+	fprintf(stderr, "L%d: can't pchar, stack empty\n", l_num);
 	break;
 	default:
 	break;
 	}
-	freeNodes();
+	releaseNodes();
 	exit(EXIT_FAILURE);
 }

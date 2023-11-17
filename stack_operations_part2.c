@@ -1,95 +1,97 @@
 #include "monty.h"
 
 /**
- * noOperation - Does nothing.
- * @stack: Pointer to the top node of the stack.
- * @lineNumber: Integer representing the line number of the opcode.
+ * nop - Does nothing.
+ * @stack: Pointer to a pointer pointing to top node of the stack.
+ * @line_number: Interger representing the line number of of the opcode.
  */
-void noOperation(stack_node_t **stack, unsigned int lineNumber)
+void nop(stack_t **stack, unsigned int line_number)
 {
 	(void)stack;
-	(void)lineNumber;
+	(void)line_number;
 }
 
+
 /**
- * swapTopTwo - Swaps the top two elements of the stack.
- * @stack: Pointer to the top node of the stack.
- * @lineNumber: Integer representing the line number of the opcode.
+ * swap_nodes - Swaps the top two elements of the stack.
+ * @stack: Pointer to a pointer pointing to top node of the stack.
+ * @line_number: Interger representing the line number of of the opcode.
  */
-void swapTopTwo(stack_node_t **stack, unsigned int lineNumber)
+void swap_nodes(stack_t **stack, unsigned int line_number)
 {
-	stack_node_t *temp;
+	stack_t *tmp;
 
 	if (stack == NULL || *stack == NULL || (*stack)->next == NULL)
-	additionalErrorHandling(8, lineNumber, "swap");
-
-	temp = (*stack)->next;
-	(*stack)->next = temp->next;
-	if (temp->next != NULL)
-	temp->next->previous = *stack;
-
-	temp->next = *stack;
-	(*stack)->previous = temp;
-	temp->previous = NULL;
-	*stack = temp;
+	additionalErr(8, line_number, "swap");
+	tmp = (*stack)->next;
+	(*stack)->next = tmp->next;
+	if (tmp->next != NULL)
+	tmp->next->prev = *stack;
+	tmp->next = *stack;
+	(*stack)->prev = tmp;
+	tmp->prev = NULL;
+	*stack = tmp;
 }
 
 /**
- * addTopTwo - Adds the top two elements of the stack.
- * @stack: Pointer to the top node of the stack.
- * @lineNumber: Integer representing the line number of the opcode.
+ * add_nodes - Adds the top two elements of the stack.
+ * @stack: Pointer to a pointer pointing to top node of the stack.
+ * @line_number: Interger representing the line number of of the opcode.
  */
-void addTopTwo(stack_node_t **stack, unsigned int lineNumber)
+void add_nodes(stack_t **stack, unsigned int line_number)
 {
 	int sum;
 
 	if (stack == NULL || *stack == NULL || (*stack)->next == NULL)
-	additionalErrorHandling(8, lineNumber, "add");
+	additionalErr(8, line_number, "add");
 
 	(*stack) = (*stack)->next;
-	sum = (*stack)->value + (*stack)->previous->value;
-	(*stack)->value = sum;
-	free((*stack)->previous);
-	(*stack)->previous = NULL;
+	sum = (*stack)->n + (*stack)->prev->n;
+	(*stack)->n = sum;
+	free((*stack)->prev);
+	(*stack)->prev = NULL;
 }
 
+
 /**
- * subtractTopTwo - Subtracts the top two elements of the stack.
- * @stack: Pointer to the top node of the stack.
- * @lineNumber: Integer representing the line number of the opcode.
+ * sub_nodes - Adds the top two elements of the stack.
+ * @stack: Pointer to a pointer pointing to top node of the stack.
+ * @line_number: Interger representing the line number of of the opcode.
  */
-void subtractTopTwo(stack_node_t **stack, unsigned int lineNumber)
+void sub_nodes(stack_t **stack, unsigned int line_number)
 {
-	int difference;
+	int sum;
 
 	if (stack == NULL || *stack == NULL || (*stack)->next == NULL)
-	additionalErrorHandling(8, lineNumber, "sub");
+
+	additionalErr(8, line_number, "sub");
+
 
 	(*stack) = (*stack)->next;
-	difference = (*stack)->value - (*stack)->previous->value;
-	(*stack)->value = difference;
-	free((*stack)->previous);
-	(*stack)->previous = NULL;
+	sum = (*stack)->n - (*stack)->prev->n;
+	(*stack)->n = sum;
+	free((*stack)->prev);
+	(*stack)->prev = NULL;
 }
 
+
 /**
- * divideTopTwo - Divides the top two elements of the stack.
- * @stack: Pointer to the top node of the stack.
- * @lineNumber: Integer representing the line number of the opcode.
+ * div_nodes - Adds the top two elements of the stack.
+ * @stack: Pointer to a pointer pointing to top node of the stack.
+ * @line_number: Interger representing the line number of of the opcode.
  */
-void divideTopTwo(stack_node_t **stack, unsigned int lineNumber)
+void div_nodes(stack_t **stack, unsigned int line_number)
 {
-	int quotient;
+	int sum;
 
 	if (stack == NULL || *stack == NULL || (*stack)->next == NULL)
-	additionalErrorHandling(8, lineNumber, "div");
+	additionalErr(8, line_number, "div");
 
-	if ((*stack)->value == 0)
-	additionalErrorHandling(9, lineNumber);
-
+	if ((*stack)->n == 0)
+	additionalErr(9, line_number);
 	(*stack) = (*stack)->next;
-	quotient = (*stack)->value / (*stack)->previous->value;
-	(*stack)->value = quotient;
-	free((*stack)->previous);
-	(*stack)->previous = NULL;
+	sum = (*stack)->n / (*stack)->prev->n;
+	(*stack)->n = sum;
+	free((*stack)->prev);
+	(*stack)->prev = NULL;
 }

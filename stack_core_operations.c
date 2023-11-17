@@ -1,42 +1,44 @@
 #include "monty.h"
 
 /**
- * multiplyTopTwo - Multiplies the top two elements of the stack.
- * @stack: Pointer to the top node of the stack.
- * @lineNumber: Integer representing the line number of the opcode.
+ * mul_nodes - Adds the top two elements of the stack.
+ * @stack: Pointer to a pointer pointing to top node of the stack.
+ * @line_number: Interger representing the line number of of the opcode.
  */
-void multiplyTopTwo(stack_node_t **stack, unsigned int lineNumber)
+void mul_nodes(stack_t **stack, unsigned int line_number)
 {
-	int product;
+	int sum;
 
 	if (stack == NULL || *stack == NULL || (*stack)->next == NULL)
-	additionalErrorHandling(8, lineNumber, "mul");
+	additionalErr(8, line_number, "mul");
 
 	(*stack) = (*stack)->next;
-	product = (*stack)->value * (*stack)->previous->value;
-	(*stack)->value = product;
-	free((*stack)->previous);
-	(*stack)->previous = NULL;
+	sum = (*stack)->n * (*stack)->prev->n;
+	(*stack)->n = sum;
+	free((*stack)->prev);
+	(*stack)->prev = NULL;
 }
 
+
 /**
- * modulusTopTwo - Calculates the modulus of the top two elements of the stack.
- * @stack: Pointer to the top node of the stack.
- * @lineNumber: Integer representing the line number of the opcode.
+ * mod_nodes - Adds the top two elements of the stack.
+ * @stack: Pointer to a pointer pointing to top node of the stack.
+ * @line_number: Interger representing the line number of of the opcode.
  */
-void modulusTopTwo(stack_node_t **stack, unsigned int lineNumber)
+void mod_nodes(stack_t **stack, unsigned int line_number)
 {
-	int remainder;
+	int sum;
 
 	if (stack == NULL || *stack == NULL || (*stack)->next == NULL)
-	additionalErrorHandling(8, lineNumber, "mod");
 
-	if ((*stack)->value == 0)
-	additionalErrorHandling(9, lineNumber);
+	additionalErr(8, line_number, "mod");
 
+
+	if ((*stack)->n == 0)
+	additionalErr(9, line_number);
 	(*stack) = (*stack)->next;
-	remainder = (*stack)->value % (*stack)->previous->value;
-	(*stack)->value = remainder;
-	free((*stack)->previous);
-	(*stack)->previous = NULL;
+	sum = (*stack)->n % (*stack)->prev->n;
+	(*stack)->n = sum;
+	free((*stack)->prev);
+	(*stack)->prev = NULL;
 }

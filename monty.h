@@ -42,43 +42,46 @@ typedef struct instruction_s
 extern stack_t *head;
 typedef void (*op_func)(stack_t **, unsigned int);
 
-/* File operations */
-void openFile(char *fileName);
-int parseLine(char *buffer, int lineNumber, int format);
-void readFile(FILE *filePointer);
-int characterCount(FILE *filePointer);
-void locateFunction(char *opcode, char *buffer, int lineNumber, int format);
+/* File Operations */
+void openDocument(char *file_name);
+int processLine(char *buffer, int line_number, int format);
+void scanFile(FILE *);
+int countFileCharacters(FILE *);
+void locateFunction(char *, char *, int, int);
 
-/* Stack operations */
-stack_node_t *createNode(int value);
-void freeNodes(void);
-void displayStack(stack_node_t **stack, unsigned int lineNumber);
-void pushToStack(stack_node_t **stack, unsigned int value);
-void enqueue(stack_node_t **stack, unsigned int value);
+/* Stack Operations */
+stack_t *initNode(int n);
+void releaseNodes(void);
+void displayStack(stack_t **, unsigned int);
+void pushToStack(stack_t **, unsigned int);
+void enqueueToStack(stack_t **, unsigned int);
 
-void executeFunction(opcode_function func, char *buffer, char *opcode, int lineNumber, int format);
+/* Function Calling */
+void executeFunction(op_func, char *, char *, int, int);
 
-void displayTop(stack_node_t **stack, unsigned int lineNumber);
-void popStack(stack_node_t **stack, unsigned int lineNumber);
-void noOperation(stack_node_t **stack, unsigned int lineNumber);
-void swapTopTwo(stack_node_t **stack, unsigned int lineNumber);
+/* Stack Manipulation */
+void showTop(stack_t **, unsigned int);
+void removeTop(stack_t **, unsigned int);
+void nop(stack_t **, unsigned int);
+void switchNodes(stack_t **, unsigned int);
 
-/* Mathematical operations on nodes */
-void addTopTwo(stack_node_t **stack, unsigned int lineNumber);
-void subtractTopTwo(stack_node_t **stack, unsigned int lineNumber);
-void divideTopTwo(stack_node_t **stack, unsigned int lineNumber);
-void multiplyTopTwo(stack_node_t **stack, unsigned int lineNumber);
-void modulusTopTwo(stack_node_t **stack, unsigned int lineNumber);
+/* Math Operations with Nodes */
+void sumNodes(stack_t **, unsigned int);
+void subtractNodes(stack_t **, unsigned int);
+void divideNodes(stack_t **, unsigned int);
+void multiplyNodes(stack_t **, unsigned int);
+void moduloNodes(stack_t **, unsigned int);
 
-/* String operations */
-void printCharTop(stack_node_t **stack, unsigned int lineNumber);
-void printString(stack_node_t **stack, unsigned int lineNumber);
-void rotateLeft(stack_node_t **stack, unsigned int lineNumber);
+/* String Operations */
+void printChar(stack_t **, unsigned int);
+void printString(stack_t **, unsigned int);
+void rotateLeft(stack_t **, unsigned int);
 
-/* Error handling */
-void handleError(int errorCode, ...);
-void additionalErrorHandling(int errorCode, ...);
-void stringErrorHandling(int errorCode, ...);
-void rotateRight(stack_node_t **stack, unsigned int lineNumber);
+/* Error Handling */
+void handleErr(int error_code, ...);
+void additionalErr(int error_code, ...);
+void stringError(int error_code, ...);
+void rotateRight(stack_t **, unsigned int);
 
-#endif /* MONTY_H */
+
+#endif

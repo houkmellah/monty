@@ -1,84 +1,77 @@
 #include "monty.h"
-stack_node_t *stack_head = NULL;
+stack_t *head = NULL;
 
 /**
- * main - entry point of the program
- * @argc: arguments count passed
- * @argv: array of arguments
- * Return:	O	on success
+ * main - Entry point of the application.
+ * @argc: Count of arguments.
+ * @argv: Array of arguments.
+ * Return: Always 0.
  */
-
 int main(int argc, char *argv[])
 {
 	if (argc != 2)
 	{
-		fprintf(stderr, "USAGE: monty file\n");
-		exit(EXIT_FAILURE);
+	fprintf(stderr, "USAGE: monty file\n");
+	exit(EXIT_FAILURE);
 	}
-	openFile(argv[1]);
-	freeNodes();
+	openDocument(argv[1]);
+	releaseNodes();
 	return (0);
 }
 
-
 /**
- * createNode - Creates a new node for the stack or queue
- * @value: The integer value to be stored in the node
- * Return: Pointer to the new node, or NULL if allocation fails
+ * initNode - Initializes a new node.
+ * @n: Number to be stored in the node.
+ * Return: Pointer to the new node, or NULL on failure.
  */
-stack_node_t *createNode(int value)
+stack_t *initNode(int n)
 {
-	stack_node_t *newNode;
+	stack_t *newNode;
 
-	newNode = malloc(sizeof(stack_node_t));
+	newNode = malloc(sizeof(stack_t));
 	if (newNode == NULL)
-		handleError(4);
+	handleErr(4);
 	newNode->next = NULL;
-	newNode->previous = NULL;
-	newNode->value = value;
+	newNode->prev = NULL;
+	newNode->n = n;
 	return (newNode);
 }
 
 /**
- * freeNodes - Frees all nodes in the stack or queue.
+ * releaseNodes - Releases all nodes in the stack.
  */
-void freeNodes(void)
+void releaseNodes(void)
 {
-	stack_node_t *tempNode;
+	stack_t *temp;
 
-	if (stack_head == NULL)
-		return;
-
-	while (stack_head != NULL)
+	while (head != NULL)
 	{
-		tempNode = stack_head;
-		stack_head = stack_head->next;
-		free(tempNode);
+	temp = head;
+	head = head->next;
+	free(temp);
 	}
 }
 
 /**
- * enqueue - Adds a new node to the end of the queue
- * @newNode: Pointer to the new node
- * @lineNumber: Line number in the script (unused)
+ * enqueueToStack - Adds a node to the end of the queue.
+ * @newNode: Pointer to the new node.
+ * @ln: Line number of the opcode.
  */
-void enqueue(stack_node_t **newNode, __attribute__((unused))
-unsigned int lineNumber)
+void enqueueToStack(stack_t **newNode, unsigned int ln)
 {
-	stack_node_t *tempNode;
-
+	stack_t *temp;
+	(void)ln;
 	if (newNode == NULL || *newNode == NULL)
-		exit(EXIT_FAILURE);
-	if (stack_head == NULL)
+	exit(EXIT_FAILURE);
+	if (head == NULL)
 	{
-		stack_head = *newNode;
-		return;
+	head = *newNode;
+	return;
 	}
-	tempNode = stack_head;
-	while (tempNode->next != NULL)
-		tempNode = tempNode->next;
+	temp = head;
+	while (temp->next != NULL)
+	temp = temp->next;
 
-	tempNode->next = *newNode;
-	(*newNode)->previous = tempNode;
-
+	temp->next = *newNode;
+	(*newNode)->prev = temp;
 }

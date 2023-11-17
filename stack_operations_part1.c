@@ -3,73 +3,73 @@
 /**
  * pushToStack - Adds a node to the stack.
  * @newNode: Pointer to the new node.
- * @lineNumber: Integer representing the line number of the opcode (unused).
+ * @ln: Integer representing the line number of the opcode.
  */
-void pushToStack(stack_node_t **newNode, __attribute__((unused))
-unsigned int lineNumber)
+void pushToStack(stack_t **newNode, unsigned int ln)
 {
-	stack_node_t *temp;
+	stack_t *temp;
 
+	(void)ln;
 	if (newNode == NULL || *newNode == NULL)
 	exit(EXIT_FAILURE);
-	if (stack_head == NULL)
+	if (head == NULL)
 	{
-	stack_head = *newNode;
+	head = *newNode;
 	return;
 	}
-	temp = stack_head;
-	stack_head = *newNode;
-	stack_head->next = temp;
-	temp->previous = stack_head;
+	temp = head;
+	head = *newNode;
+	head->next = temp;
+	temp->prev = head;
 }
 
 /**
- * displayStack - Prints all the elements of the stack.
+ * displayStack - Displays all nodes in the stack.
  * @stack: Pointer to the top node of the stack.
- * @lineNumber: Line number of the opcode (unused).
+ * @lineNumber: Line number of the opcode.
  */
-void displayStack(stack_node_t **stack, __attribute__((unused))
-unsigned int lineNumber)
+void displayStack(stack_t **stack, unsigned int lineNumber)
 {
-	stack_node_t *temp;
+	stack_t *temp;
 
+	(void) lineNumber;
 	if (stack == NULL)
 	exit(EXIT_FAILURE);
 	temp = *stack;
 	while (temp != NULL)
 	{
-	printf("%d\n", temp->value);
+	printf("%d\n", temp->n);
 	temp = temp->next;
 	}
 }
 
 /**
- * popStack - Removes the top node of the stack.
+ * removeTop - Removes the top node of the stack.
  * @stack: Pointer to the top node of the stack.
  * @lineNumber: Integer representing the line number of the opcode.
  */
-void popStack(stack_node_t **stack, unsigned int lineNumber)
+void removeTop(stack_t **stack, unsigned int lineNumber)
 {
-	stack_node_t *temp;
+	stack_t *temp;
 
 	if (stack == NULL || *stack == NULL)
-	additionalErrorHandling(7, lineNumber);
+	additionalErr(7, lineNumber);
 
 	temp = *stack;
 	*stack = temp->next;
 	if (*stack != NULL)
-	(*stack)->previous = NULL;
+	(*stack)->prev = NULL;
 	free(temp);
 }
 
 /**
- * displayTop - Prints the top node of the stack.
+ * showTop - Prints the top element of the stack.
  * @stack: Pointer to the top node of the stack.
  * @lineNumber: Integer representing the line number of the opcode.
  */
-void displayTop(stack_node_t **stack, unsigned int lineNumber)
+void showTop(stack_t **stack, unsigned int lineNumber)
 {
 	if (stack == NULL || *stack == NULL)
-	additionalErrorHandling(6, lineNumber);
-	printf("%d\n", (*stack)->value);
+	additionalErr(6, lineNumber);
+	printf("%d\n", (*stack)->n);
 }
